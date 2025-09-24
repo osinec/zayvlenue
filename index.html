@@ -3,97 +3,171 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Заявление на возврат ДС по СМБ</title>
+  <title>Заявление на возврат ДС — СМБ</title>
+  <!-- Загружаем библиотеки -->
   <script src="https://unpkg.com/docx@7.4.1/build/index.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
   <style>
-    body {
-      font-family: Times New Roman, serif;
-      max-width: 700px;
-      margin: 30px auto;
-      padding: 20px;
-      line-height: 1.6;
+    * {
+      box-sizing: border-box;
     }
-    h2 {
+    body {
+      font-family: 'Times New Roman', Times, serif;
+      background-color: #f9f9fb;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    h1 {
       text-align: center;
-      margin-bottom: 30px;
+      margin-bottom: 25px;
+      color: #0056b3;
+      font-size: 24px;
+    }
+    .form-group {
+      margin-bottom: 20px;
     }
     label {
       display: block;
-      margin-top: 15px;
+      margin-bottom: 6px;
       font-weight: bold;
+      color: #222;
     }
     input, select, textarea {
       width: 100%;
-      padding: 8px;
-      margin-top: 5px;
-      box-sizing: border-box;
+      padding: 10px 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
       font-family: inherit;
+      font-size: 15px;
+      transition: border-color 0.2s;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #0056b3;
+      box-shadow: 0 0 0 2px rgba(0,86,179,0.15);
     }
     button {
-      margin-top: 25px;
-      padding: 12px 24px;
-      font-size: 18px;
+      display: block;
+      width: 100%;
+      padding: 14px;
       background-color: #0056b3;
       color: white;
+      font-size: 18px;
+      font-weight: bold;
       border: none;
+      border-radius: 6px;
       cursor: pointer;
+      transition: background-color 0.2s;
     }
     button:hover {
-      background-color: #003d82;
+      background-color: #004299;
+    }
+    .note {
+      font-size: 13px;
+      color: #666;
+      margin-top: 5px;
+      font-style: italic;
+    }
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+      h1 {
+        font-size: 20px;
+      }
     }
   </style>
 </head>
 <body>
-  <h2>Заполните данные для заявления</h2>
+  <div class="container">
+    <h1>Заявление на возврат денежных средств</h1>
 
-  <label for="orgName">Наименование организации (ООО / ИП):</label>
-  <input type="text" id="orgName" placeholder="ООО «Ромашка»">
+    <div class="form-group">
+      <label for="orgName">Наименование организации (ООО / ИП):</label>
+      <input type="text" id="orgName" placeholder="ООО «Ромашка»">
+    </div>
 
-  <label for="contractNumber">Номер договора:</label>
-  <input type="text" id="contractNumber" placeholder="№ Д-123/2024">
+    <div class="form-group">
+      <label for="contractNumber">Номер договора:</label>
+      <input type="text" id="contractNumber" placeholder="№ Д-123/2024">
+    </div>
 
-  <label for="amountNumeric">Сумма цифрами:</label>
-  <input type="text" id="amountNumeric" placeholder="150000.00">
+    <div class="form-group">
+      <label for="amountNumeric">Сумма цифрами:</label>
+      <input type="text" id="amountNumeric" placeholder="150000.00">
+    </div>
 
-  <label for="amountWords">Сумма прописью:</label>
-  <input type="text" id="amountWords" placeholder="сто пятьдесят тысяч рублей 00 копеек">
+    <div class="form-group">
+      <label for="amountWords">Сумма прописью:</label>
+      <input type="text" id="amountWords" placeholder="сто пятьдесят тысяч рублей 00 копеек">
+    </div>
 
-  <label for="accountNumber">Номер счёта:</label>
-  <input type="text" id="accountNumber" placeholder="40702810123456789012">
+    <div class="form-group">
+      <label for="accountNumber">Номер счёта:</label>
+      <input type="text" id="accountNumber" placeholder="40702810123456789012">
+    </div>
 
-  <label for="refundReason">Причина возврата:</label>
-  <textarea id="refundReason" rows="2" placeholder="Неверно выставлен счёт"></textarea>
+    <div class="form-group">
+      <label for="refundReason">Причина возврата:</label>
+      <textarea id="refundReason" rows="2" placeholder="Неверно выставлен счёт"></textarea>
+    </div>
 
-  <label for="inn">ИНН:</label>
-  <input type="text" id="inn" placeholder="1234567890">
+    <div class="form-group">
+      <label for="inn">ИНН:</label>
+      <input type="text" id="inn" placeholder="1234567890">
+    </div>
 
-  <label for="kpp">КПП (если ИП — оставьте пустым):</label>
-  <input type="text" id="kpp" placeholder="123456789">
+    <div class="form-group">
+      <label for="kpp">КПП (если ИП — оставьте пустым):</label>
+      <input type="text" id="kpp" placeholder="123456789">
+      <div class="note">Для ИП строка КПП будет автоматически удалена из заявления.</div>
+    </div>
 
-  <label for="bank">Банк:</label>
-  <input type="text" id="bank" placeholder="ПАО Сбербанк">
+    <div class="form-group">
+      <label for="bank">Банк:</label>
+      <input type="text" id="bank" placeholder="ПАО Сбербанк">
+    </div>
 
-  <label for="checkingAccount">Расчётный счёт:</label>
-  <input type="text" id="checkingAccount" placeholder="40702810123456789012">
+    <div class="form-group">
+      <label for="checkingAccount">Расчётный счёт:</label>
+      <input type="text" id="checkingAccount" placeholder="40702810123456789012">
+    </div>
 
-  <label for="correspondentAccount">Корреспондентский счёт:</label>
-  <input type="text" id="correspondentAccount" placeholder="30101810400000000225">
+    <div class="form-group">
+      <label for="correspondentAccount">Корреспондентский счёт:</label>
+      <input type="text" id="correspondentAccount" placeholder="30101810400000000225">
+    </div>
 
-  <label for="bik">БИК:</label>
-  <input type="text" id="bik" placeholder="044525225">
+    <div class="form-group">
+      <label for="bik">БИК:</label>
+      <input type="text" id="bik" placeholder="044525225">
+    </div>
 
-  <label for="directorTitle">Должность руководителя:</label>
-  <select id="directorTitle">
-    <option value="Генеральный директор">Генеральный директор</option>
-    <option value="Директор">Директор</option>
-    <option value="ИП">ИП</option>
-  </select>
+    <div class="form-group">
+      <label for="directorTitle">Должность руководителя:</label>
+      <select id="directorTitle">
+        <option value="Генеральный директор">Генеральный директор</option>
+        <option value="Директор">Директор</option>
+        <option value="ИП">ИП</option>
+      </select>
+    </div>
 
-  <label for="directorName">ФИО руководителя:</label>
-  <input type="text" id="directorName" placeholder="Иванов Иван Иванович">
+    <div class="form-group">
+      <label for="directorName">ФИО руководителя:</label>
+      <input type="text" id="directorName" placeholder="Иванов Иван Иванович">
+    </div>
 
-  <button onclick="generateStatement()">Скачать заявление (.docx)</button>
+    <button onclick="generateStatement()">Скачать заявление (.docx)</button>
+  </div>
 
   <script>
     function getCurrentDate() {
@@ -105,62 +179,65 @@
     }
 
     function generateStatement() {
-      const orgName = document.getElementById("orgName").value || "[Наименование организации]";
-      const contractNumber = document.getElementById("contractNumber").value || "[номер договора]";
-      const amountNumeric = document.getElementById("amountNumeric").value || "[сумма]";
-      const amountWords = document.getElementById("amountWords").value || "[расшифровка суммы]";
-      const accountNumber = document.getElementById("accountNumber").value || "[номер счёта]";
-      const refundReason = document.getElementById("refundReason").value || "________________________________________";
-      const inn = document.getElementById("inn").value || "________________________";
-      const kpp = document.getElementById("kpp").value;
-      const bank = document.getElementById("bank").value || "________________________";
-      const checkingAccount = document.getElementById("checkingAccount").value || "________________________";
-      const correspondentAccount = document.getElementById("correspondentAccount").value || "________________________";
-      const bik = document.getElementById("bik").value || "________________________";
+      // Получаем значения
+      const orgName = document.getElementById("orgName").value.trim() || "[Наименование организации]";
+      const contractNumber = document.getElementById("contractNumber").value.trim() || "[номер договора]";
+      const amountNumeric = document.getElementById("amountNumeric").value.trim() || "[сумма]";
+      const amountWords = document.getElementById("amountWords").value.trim() || "[расшифровка суммы]";
+      const accountNumber = document.getElementById("accountNumber").value.trim() || "[номер счёта]";
+      const refundReason = document.getElementById("refundReason").value.trim() || "________________________________________";
+      const inn = document.getElementById("inn").value.trim() || "________________________";
+      const kpp = document.getElementById("kpp").value.trim();
+      const bank = document.getElementById("bank").value.trim() || "________________________";
+      const checkingAccount = document.getElementById("checkingAccount").value.trim() || "________________________";
+      const correspondentAccount = document.getElementById("correspondentAccount").value.trim() || "________________________";
+      const bik = document.getElementById("bik").value.trim() || "________________________";
       const directorTitle = document.getElementById("directorTitle").value;
-      const directorName = document.getElementById("directorName").value || "________________________";
+      const directorName = document.getElementById("directorName").value.trim() || "________________________";
       const currentDate = getCurrentDate();
+
+      // Проверка: если библиотека не загружена
+      if (typeof window.docx === 'undefined' || typeof saveAs === 'undefined') {
+        alert('Ошибка: не удалось загрузить необходимые библиотеки. Проверьте подключение к интернету.');
+        return;
+      }
 
       const { Document, Paragraph, TextRun, Packer, AlignmentType } = window.docx;
 
       const paragraphs = [];
 
-      // Исх. № ________ от дата
+      // Исх. № и дата
       paragraphs.push(
         new Paragraph({
-          children: [
-            new TextRun(`Исх. №  ________\nот   ${currentDate}`)
-          ],
+          children: [new TextRun(`Исх. №  ________\nот   ${currentDate}`)],
           alignment: AlignmentType.LEFT,
           spacing: { after: 200 }
         })
       );
 
-      // Адресат — выравнивание по правому краю
+      // Адресат — по правому краю
       paragraphs.push(
         new Paragraph({
           children: [
-            new TextRun("Генеральному директору"),
-            new TextRun("\nООО \"СМБ-сервис\""),
-            new TextRun("\nАндрееву И.Н.")
+            new TextRun("Генеральному директору\n"),
+            new TextRun('ООО "СМБ-сервис"\n'),
+            new TextRun("Андрееву И.Н.")
           ],
           alignment: AlignmentType.RIGHT,
           spacing: { after: 400 }
         })
       );
 
-      // Заголовок — жирный, выравнивание по центру
+      // Заголовок — жирный, по центру
       paragraphs.push(
         new Paragraph({
-          children: [
-            new TextRun("заявление на возврат денежных средств").bold()
-          ],
+          children: [new TextRun("заявление на возврат денежных средств").bold()],
           alignment: AlignmentType.CENTER,
           spacing: { after: 400 }
         })
       );
 
-      // Основной текст — выравнивание по ширине
+      // Основной текст — по ширине
       const mainText = `ООО  ${orgName}  просит произвести возврат денежных средств по договору   ${contractNumber}  в размере  ${amountNumeric} (${amountWords}), в том числе НДС по ставке в соответствии с действующим законодательством, по счету  ${accountNumber}`;
       paragraphs.push(
         new Paragraph({
@@ -196,8 +273,8 @@
         })
       );
 
-      // КПП — только если не пустой
-      if (kpp.trim() !== "") {
+      // КПП — только если заполнен
+      if (kpp !== "") {
         paragraphs.push(
           new Paragraph({
             children: [new TextRun(`КПП ${kpp}`)],
@@ -256,7 +333,7 @@
         })
       );
 
-      // М.П. — выравнивание по правому краю с отступом
+      // М.П. — по правому краю
       paragraphs.push(
         new Paragraph({
           children: [new TextRun("М.П.")],
@@ -265,17 +342,14 @@
         })
       );
 
-      // Создание документа
-      const doc = new Document({
-        sections: [{
-          properties: {},
-          children: paragraphs
-        }]
-      });
+      // Создание и скачивание документа
+      const doc = new Document({ sections: [{ children: paragraphs }] });
 
-      // Скачивание
       Packer.toBlob(doc).then(blob => {
         saveAs(blob, "Заявление_на_возврат_ДС.docx");
+      }).catch(err => {
+        console.error("Ошибка генерации документа:", err);
+        alert("Не удалось создать документ. Попробуйте обновить страницу.");
       });
     }
   </script>
