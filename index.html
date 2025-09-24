@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Генератор документа Word</title>
+  <script src="https://unpkg.com/docx@7.4.1/build/index.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      box-sizing: border-box;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Заполните данные</h1>
+
+  <label for="name">Ваше имя:</label>
+  <input type="text" id="name" placeholder="Иван Иванов">
+
+  <label for="email">Ваш email:</label>
+  <input type="email" id="email" placeholder="ivan@example.com">
+
+  <label for="phone">Телефон (опционально):</label>
+  <input type="text" id="phone" placeholder="+7 (999) 123-45-67">
+
+  <button onclick="generateDocx()">Скачать документ Word</button>
+
+  <script>
+    function generateDocx() {
+      const name = document.getElementById("name").value || "[не указано]";
+      const email = document.getElementById("email").value || "[не указано]";
+      const phone = document.getElementById("phone").value || "[не указано]";
+
+      // Ваш шаблон текста с подстановкой данных
+      const templateText = `
+        Уважаемый(ая) ${name}!
+
+        Благодарим вас за обращение. Мы получили вашу заявку.
+
+        Ваши контактные данные:
+        - Имя: ${name}
+        - Email: ${email}
+        - Телефон: ${phone}
+
+        Скоро с вами свяжется наш менеджер.
+
+        С уважением,
+        Команда поддержки
+      `.trim();
+
+      // Создание документа с помощью docx
+      const { Document, Paragraph, TextRun, Packer } = window.docx;
+
+      const doc = new Document({
+        sections: [{
+          properties: {},
+          children: [
+            new Paragraph({
+              children: [
+                new TextRun(templateText)
+              ],
+            }),
+          ],
+        }],
+      });
+
+      // Генерация и скачивание файла
+      Packer.toBlob(doc).then(blob => {
+        saveAs(blob, "документ.docx");
+      });
+    }
+  </script>
+</body>
+</html>
