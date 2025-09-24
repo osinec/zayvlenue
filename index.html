@@ -174,86 +174,86 @@
 
       const paragraphs = [];
 
-      // Верх: исходящий номер и дата (без выравнивания)
+      // Верх: исходящий номер и дата
       paragraphs.push(new Paragraph({ children: [new TextRun(`Исх. №  ________`)] }));
       paragraphs.push(new Paragraph({ children: [new TextRun(`от   ${currentDate}`)] }));
       paragraphs.push(new Paragraph({ children: [new TextRun("")] })); // пустая строка
 
-      // Адресат — с отступом пробелами (как в оригинале)
+      // Адресат — с отступом пробелами (справа)
       paragraphs.push(new Paragraph({ children: [new TextRun("                                                                                                                                                                   Генеральному директору")] }));
       paragraphs.push(new Paragraph({ children: [new TextRun('ООО "СМБ-сервис"')] }));
       paragraphs.push(new Paragraph({ children: [new TextRun("Андрееву И.Н.")] }));
       paragraphs.push(new Paragraph({ children: [new TextRun("")] }));
 
-      // Заголовок — по центру или без выравнивания (в оригинале — с отступом)
-      paragraphs.push(new Paragraph({ 
-        children: [new TextRun("  заявление на возврат денежных средств")],
-        alignment: AlignmentType.LEFT
+      // ЗАГОЛОВОК: по центру и с заглавной буквы
+      paragraphs.push(new Paragraph({
+        children: [new TextRun("Заявление на возврат денежных средств")],
+        alignment: AlignmentType.CENTER
       }));
       paragraphs.push(new Paragraph({ children: [new TextRun("")] }));
 
-      // Основной текст — ВЫРАВНИВАНИЕ ПО ШИРИНЕ
+      // Основной текст — выравнивание по ширине
       const mainText = `ООО ${orgName} просит произвести возврат денежных средств по договору ${contractNumber} в размере ${amountNumeric} (${amountWords}), в том числе НДС по ставке в соответствии с действующим законодательством, по счету ${accountNumber}.`;
-      paragraphs.push(new Paragraph({ 
+      paragraphs.push(new Paragraph({
         children: [new TextRun(mainText)],
         alignment: AlignmentType.JUSTIFIED
       }));
       paragraphs.push(new Paragraph({ children: [new TextRun("")] }));
 
-      // Причина возврата — выравнивание по ширине
-      paragraphs.push(new Paragraph({ 
+      // Причина возврата
+      paragraphs.push(new Paragraph({
         children: [new TextRun(`Причина возврата: ${refundReason}`)],
         alignment: AlignmentType.JUSTIFIED
       }));
       paragraphs.push(new Paragraph({ children: [new TextRun("")] }));
 
-      // Реквизиты — выравнивание по ширине
-      paragraphs.push(new Paragraph({ 
+      // Реквизиты
+      paragraphs.push(new Paragraph({
         children: [new TextRun(`Реквизиты ООО «${orgName}»`)],
         alignment: AlignmentType.JUSTIFIED
       }));
-      paragraphs.push(new Paragraph({ 
+      paragraphs.push(new Paragraph({
         children: [new TextRun(`ИНН ${inn}`)],
         alignment: AlignmentType.JUSTIFIED
       }));
 
       if (kpp !== "") {
-        paragraphs.push(new Paragraph({ 
+        paragraphs.push(new Paragraph({
           children: [new TextRun(`КПП ${kpp}`)],
           alignment: AlignmentType.JUSTIFIED
         }));
       }
 
-      paragraphs.push(new Paragraph({ 
+      paragraphs.push(new Paragraph({
         children: [new TextRun(`Банк ${bank}`)],
         alignment: AlignmentType.JUSTIFIED
       }));
-      paragraphs.push(new Paragraph({ 
+      paragraphs.push(new Paragraph({
         children: [new TextRun(`р/сч ${checkingAccount}`)],
         alignment: AlignmentType.JUSTIFIED
       }));
-      paragraphs.push(new Paragraph({ 
+      paragraphs.push(new Paragraph({
         children: [new TextRun(`кор/сч ${correspondentAccount}`)],
         alignment: AlignmentType.JUSTIFIED
       }));
-      paragraphs.push(new Paragraph({ 
+      paragraphs.push(new Paragraph({
         children: [new TextRun(`БИК ${bik}`)],
         alignment: AlignmentType.JUSTIFIED
       }));
       paragraphs.push(new Paragraph({ children: [new TextRun("")] }));
 
-      // Подпись — без выравнивания (по левому краю с отступом)
-      paragraphs.push(new Paragraph({ 
+      // Подпись
+      paragraphs.push(new Paragraph({
         children: [new TextRun(`${directorTitle}`)],
         alignment: AlignmentType.LEFT
       }));
-      paragraphs.push(new Paragraph({ 
+      paragraphs.push(new Paragraph({
         children: [new TextRun(`______________/${directorName}/`)],
         alignment: AlignmentType.LEFT
       }));
       paragraphs.push(new Paragraph({ children: [new TextRun("")] }));
 
-      // М.П. — с отступом пробелами (справа)
+      // М.П. — справа
       paragraphs.push(new Paragraph({ children: [new TextRun("                                                                                                                             М.П.")] }));
 
       // Создание документа
