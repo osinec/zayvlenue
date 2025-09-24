@@ -329,7 +329,7 @@
       }));
       paragraphs.push(new Paragraph({ children: [new TextRun("")] }));
 
-      const mainText = `ООО ${orgName} просит произвести возврат денежных средств по договору ${contractNumber} в размере ${amountNumeric} (${amountWords}), в том числе НДС по ставке в соответствии с действующим законодательством, по счету ${accountNumber}.`;
+      const mainText = `${orgName} просит произвести возврат денежных средств по договору ${contractNumber} в размере ${amountNumeric} (${amountWords}), в том числе НДС по ставке в соответствии с действующим законодательством, по счету ${accountNumber}.`;
       paragraphs.push(new Paragraph({
         children: [new TextRun(mainText)],
         alignment: AlignmentType.JUSTIFIED
