@@ -4,22 +4,19 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Заявление на возврат ДС — СМБ</title>
-  <!-- Загружаем библиотеки -->
-  <script src="https://unpkg.com/docx@7.4.1/build/index.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  <!-- Библиотеки: стабильные CDN-ссылки -->
+  <script src="https://cdn.jsdelivr.net/npm/docx@7.4.1/build/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
   <style>
-    * {
-      box-sizing: border-box;
-    }
     body {
       font-family: 'Times New Roman', Times, serif;
-      background-color: #f9f9fb;
+      background-color: #f8f9fa;
       margin: 0;
       padding: 20px;
       color: #333;
     }
     .container {
-      max-width: 720px;
+      max-width: 700px;
       margin: 0 auto;
       background: white;
       padding: 30px;
@@ -30,7 +27,7 @@
       text-align: center;
       margin-bottom: 25px;
       color: #0056b3;
-      font-size: 24px;
+      font-size: 22px;
     }
     .form-group {
       margin-bottom: 20px;
@@ -39,24 +36,16 @@
       display: block;
       margin-bottom: 6px;
       font-weight: bold;
-      color: #222;
     }
     input, select, textarea {
       width: 100%;
-      padding: 10px 12px;
+      padding: 10px;
       border: 1px solid #ccc;
       border-radius: 6px;
       font-family: inherit;
       font-size: 15px;
-      transition: border-color 0.2s;
-    }
-    input:focus, select:focus, textarea:focus {
-      outline: none;
-      border-color: #0056b3;
-      box-shadow: 0 0 0 2px rgba(0,86,179,0.15);
     }
     button {
-      display: block;
       width: 100%;
       padding: 14px;
       background-color: #0056b3;
@@ -66,7 +55,6 @@
       border: none;
       border-radius: 6px;
       cursor: pointer;
-      transition: background-color 0.2s;
     }
     button:hover {
       background-color: #004299;
@@ -74,16 +62,8 @@
     .note {
       font-size: 13px;
       color: #666;
-      margin-top: 5px;
       font-style: italic;
-    }
-    @media (max-width: 600px) {
-      .container {
-        padding: 20px;
-      }
-      h1 {
-        font-size: 20px;
-      }
+      margin-top: 5px;
     }
   </style>
 </head>
@@ -92,68 +72,68 @@
     <h1>Заявление на возврат денежных средств</h1>
 
     <div class="form-group">
-      <label for="orgName">Наименование организации (ООО / ИП):</label>
+      <label>Наименование организации (ООО / ИП):</label>
       <input type="text" id="orgName" placeholder="ООО «Ромашка»">
     </div>
 
     <div class="form-group">
-      <label for="contractNumber">Номер договора:</label>
+      <label>Номер договора:</label>
       <input type="text" id="contractNumber" placeholder="№ Д-123/2024">
     </div>
 
     <div class="form-group">
-      <label for="amountNumeric">Сумма цифрами:</label>
+      <label>Сумма цифрами:</label>
       <input type="text" id="amountNumeric" placeholder="150000.00">
     </div>
 
     <div class="form-group">
-      <label for="amountWords">Сумма прописью:</label>
+      <label>Сумма прописью:</label>
       <input type="text" id="amountWords" placeholder="сто пятьдесят тысяч рублей 00 копеек">
     </div>
 
     <div class="form-group">
-      <label for="accountNumber">Номер счёта:</label>
+      <label>Номер счёта:</label>
       <input type="text" id="accountNumber" placeholder="40702810123456789012">
     </div>
 
     <div class="form-group">
-      <label for="refundReason">Причина возврата:</label>
+      <label>Причина возврата:</label>
       <textarea id="refundReason" rows="2" placeholder="Неверно выставлен счёт"></textarea>
     </div>
 
     <div class="form-group">
-      <label for="inn">ИНН:</label>
+      <label>ИНН:</label>
       <input type="text" id="inn" placeholder="1234567890">
     </div>
 
     <div class="form-group">
-      <label for="kpp">КПП (если ИП — оставьте пустым):</label>
+      <label>КПП (если ИП — оставьте пустым):</label>
       <input type="text" id="kpp" placeholder="123456789">
-      <div class="note">Для ИП строка КПП будет автоматически удалена из заявления.</div>
+      <div class="note">Для ИП строка КПП будет удалена из заявления.</div>
     </div>
 
     <div class="form-group">
-      <label for="bank">Банк:</label>
+      <label>Банк:</label>
       <input type="text" id="bank" placeholder="ПАО Сбербанк">
     </div>
 
     <div class="form-group">
-      <label for="checkingAccount">Расчётный счёт:</label>
+      <label>Расчётный счёт:</label>
       <input type="text" id="checkingAccount" placeholder="40702810123456789012">
     </div>
 
     <div class="form-group">
-      <label for="correspondentAccount">Корреспондентский счёт:</label>
+      <label>Корреспондентский счёт:</label>
       <input type="text" id="correspondentAccount" placeholder="30101810400000000225">
     </div>
 
     <div class="form-group">
-      <label for="bik">БИК:</label>
+      <label>БИК:</label>
       <input type="text" id="bik" placeholder="044525225">
     </div>
 
     <div class="form-group">
-      <label for="directorTitle">Должность руководителя:</label>
+      <label>Должность руководителя:</label>
       <select id="directorTitle">
         <option value="Генеральный директор">Генеральный директор</option>
         <option value="Директор">Директор</option>
@@ -162,7 +142,7 @@
     </div>
 
     <div class="form-group">
-      <label for="directorName">ФИО руководителя:</label>
+      <label>ФИО руководителя:</label>
       <input type="text" id="directorName" placeholder="Иванов Иван Иванович">
     </div>
 
@@ -172,14 +152,11 @@
   <script>
     function getCurrentDate() {
       const now = new Date();
-      const day = String(now.getDate()).padStart(2, '0');
-      const month = String(now.getMonth() + 1).padStart(2, '0');
-      const year = now.getFullYear();
-      return `${day}.${month}.${year}`;
+      return `${String(now.getDate()).padStart(2, '0')}.${String(now.getMonth() + 1).padStart(2, '0')}.${now.getFullYear()}`;
     }
 
     function generateStatement() {
-      // Получаем значения
+      // Сбор данных
       const orgName = document.getElementById("orgName").value.trim() || "[Наименование организации]";
       const contractNumber = document.getElementById("contractNumber").value.trim() || "[номер договора]";
       const amountNumeric = document.getElementById("amountNumeric").value.trim() || "[сумма]";
@@ -196,160 +173,165 @@
       const directorName = document.getElementById("directorName").value.trim() || "________________________";
       const currentDate = getCurrentDate();
 
-      // Проверка: если библиотека не загружена
-      if (typeof window.docx === 'undefined' || typeof saveAs === 'undefined') {
-        alert('Ошибка: не удалось загрузить необходимые библиотеки. Проверьте подключение к интернету.');
+      // Проверка загрузки библиотек
+      if (!window.docx || !window.saveAs) {
+        alert("Ошибка: не удалось загрузить библиотеки. Убедитесь, что у вас есть интернет.");
         return;
       }
 
       const { Document, Paragraph, TextRun, Packer, AlignmentType } = window.docx;
 
-      const paragraphs = [];
+      const children = [];
 
       // Исх. № и дата
-      paragraphs.push(
+      children.push(
         new Paragraph({
           children: [new TextRun(`Исх. №  ________\nот   ${currentDate}`)],
-          alignment: AlignmentType.LEFT,
-          spacing: { after: 200 }
+          alignment: AlignmentType.LEFT
         })
       );
 
+      // Пустой параграф для отступа
+      children.push(new Paragraph({}));
+
       // Адресат — по правому краю
-      paragraphs.push(
+      children.push(
         new Paragraph({
           children: [
             new TextRun("Генеральному директору\n"),
             new TextRun('ООО "СМБ-сервис"\n'),
             new TextRun("Андрееву И.Н.")
           ],
-          alignment: AlignmentType.RIGHT,
-          spacing: { after: 400 }
+          alignment: AlignmentType.RIGHT
         })
       );
 
+      // Пустой параграф
+      children.push(new Paragraph({}));
+
       // Заголовок — жирный, по центру
-      paragraphs.push(
+      children.push(
         new Paragraph({
           children: [new TextRun("заявление на возврат денежных средств").bold()],
-          alignment: AlignmentType.CENTER,
-          spacing: { after: 400 }
+          alignment: AlignmentType.CENTER
         })
       );
+
+      // Пустой параграф
+      children.push(new Paragraph({}));
 
       // Основной текст — по ширине
       const mainText = `ООО  ${orgName}  просит произвести возврат денежных средств по договору   ${contractNumber}  в размере  ${amountNumeric} (${amountWords}), в том числе НДС по ставке в соответствии с действующим законодательством, по счету  ${accountNumber}`;
-      paragraphs.push(
+      children.push(
         new Paragraph({
           children: [new TextRun(mainText)],
-          alignment: AlignmentType.JUSTIFIED,
-          spacing: { after: 200 }
+          alignment: AlignmentType.JUSTIFIED
         })
       );
 
       // Причина возврата
-      paragraphs.push(
+      children.push(
         new Paragraph({
           children: [new TextRun(`Причина возврата:  ${refundReason}`)],
-          alignment: AlignmentType.JUSTIFIED,
-          spacing: { after: 400 }
+          alignment: AlignmentType.JUSTIFIED
         })
       );
+
+      // Пустой параграф
+      children.push(new Paragraph({}));
 
       // Реквизиты
-      paragraphs.push(
+      children.push(
         new Paragraph({
           children: [new TextRun(`Реквизиты  ООО «${orgName}»`)],
-          alignment: AlignmentType.JUSTIFIED,
-          spacing: { after: 100 }
+          alignment: AlignmentType.LEFT
         })
       );
 
-      paragraphs.push(
+      children.push(
         new Paragraph({
           children: [new TextRun(`ИНН ${inn}`)],
-          alignment: AlignmentType.JUSTIFIED,
-          spacing: { after: 100 }
+          alignment: AlignmentType.LEFT
         })
       );
 
-      // КПП — только если заполнен
       if (kpp !== "") {
-        paragraphs.push(
+        children.push(
           new Paragraph({
             children: [new TextRun(`КПП ${kpp}`)],
-            alignment: AlignmentType.JUSTIFIED,
-            spacing: { after: 100 }
+            alignment: AlignmentType.LEFT
           })
         );
       }
 
-      paragraphs.push(
+      children.push(
         new Paragraph({
           children: [new TextRun(`Банк  ${bank}`)],
-          alignment: AlignmentType.JUSTIFIED,
-          spacing: { after: 100 }
+          alignment: AlignmentType.LEFT
         })
       );
 
-      paragraphs.push(
+      children.push(
         new Paragraph({
           children: [new TextRun(`р/сч ${checkingAccount}`)],
-          alignment: AlignmentType.JUSTIFIED,
-          spacing: { after: 100 }
+          alignment: AlignmentType.LEFT
         })
       );
 
-      paragraphs.push(
+      children.push(
         new Paragraph({
           children: [new TextRun(`кор/сч ${correspondentAccount}`)],
-          alignment: AlignmentType.JUSTIFIED,
-          spacing: { after: 100 }
+          alignment: AlignmentType.LEFT
         })
       );
 
-      paragraphs.push(
+      children.push(
         new Paragraph({
           children: [new TextRun(`БИК ${bik}`)],
-          alignment: AlignmentType.JUSTIFIED,
-          spacing: { after: 400 }
+          alignment: AlignmentType.LEFT
         })
       );
+
+      // Пустой параграф
+      children.push(new Paragraph({}));
 
       // Подпись
-      paragraphs.push(
+      children.push(
         new Paragraph({
           children: [new TextRun(directorTitle)],
-          alignment: AlignmentType.LEFT,
-          spacing: { after: 100 }
+          alignment: AlignmentType.LEFT
         })
       );
 
-      paragraphs.push(
+      children.push(
         new Paragraph({
           children: [new TextRun(`______________/${directorName}/`)],
-          alignment: AlignmentType.LEFT,
-          spacing: { after: 100 }
+          alignment: AlignmentType.LEFT
         })
       );
 
       // М.П. — по правому краю
-      paragraphs.push(
+      children.push(
         new Paragraph({
           children: [new TextRun("М.П.")],
-          alignment: AlignmentType.RIGHT,
-          spacing: { after: 0 }
+          alignment: AlignmentType.RIGHT
         })
       );
 
-      // Создание и скачивание документа
-      const doc = new Document({ sections: [{ children: paragraphs }] });
+      // Создание документа
+      const doc = new Document({
+        sections: [{
+          properties: {},
+          children: children
+        }]
+      });
 
+      // Генерация и скачивание
       Packer.toBlob(doc).then(blob => {
-        saveAs(blob, "Заявление_на_возврат_ДС.docx");
+        window.saveAs(blob, "Заявление_на_возврат_ДС.docx");
       }).catch(err => {
-        console.error("Ошибка генерации документа:", err);
-        alert("Не удалось создать документ. Попробуйте обновить страницу.");
+        console.error(err);
+        alert("Не удалось создать документ. Попробуйте ещё раз.");
       });
     }
   </script>
