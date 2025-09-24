@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Заявление на возврат ДС — СМБ</title>
-  <!-- Надёжные CDN-ссылки -->
   <script src="https://cdn.jsdelivr.net/npm/docx@7.4.1/build/index.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
   <style>
@@ -155,7 +154,6 @@
     }
 
     function generateStatement() {
-      // Сбор данных
       const orgName = document.getElementById("orgName").value.trim() || "[Наименование организации]";
       const contractNumber = document.getElementById("contractNumber").value.trim() || "[номер договора]";
       const amountNumeric = document.getElementById("amountNumeric").value.trim() || "[сумма]";
@@ -172,48 +170,60 @@
       const directorName = document.getElementById("directorName").value.trim() || "________________________";
       const currentDate = getCurrentDate();
 
-      // Текст заявления — простой, без сложного форматирования
-      let text = `Исх. №  ________
-от   ${currentDate}
-
-                                                                                                                                                                   Генеральному директору
-ООО "СМБ-сервис"
-Андрееву И.Н.
-
-  заявление на возврат денежных средств
-
-  ООО  ${orgName}  просит произвести возврат денежных средств по договору   ${contractNumber}  в размере  ${amountNumeric} (${amountWords}), в том числе НДС по ставке в соответствии с действующим законодательством, по счету  ${accountNumber}
-
-Причина возврата:  ${refundReason}
-
-Реквизиты  ООО «${orgName}»
-ИНН ${inn}
-`;
-
-      if (kpp !== "") {
-        text += `КПП ${kpp}\n`;
-      }
-
-      text += `Банк  ${bank}
-р/сч ${checkingAccount}
-кор/сч ${correspondentAccount}
-БИК ${bik}
-
-${directorTitle}    
-  ______________/${directorName}/
-
-                                                                                                                             М.П.`;
-
-      // Создание документа
       const { Document, Paragraph, TextRun, Packer } = window.docx;
 
+      const paragraphs = [];
+
+      // Верх: исходящий номер и дата
+      paragraphs.push(new Paragraph({ children: [new TextRun(`Исх. №  ________`)] }));
+      paragraphs.push(new Paragraph({ children: [new TextRun(`от   ${currentDate}`)] }));
+      paragraphs.push(new Paragraph({ children: [new TextRun("")] })); // пустая строка
+
+      // Адресат — с отступом пробелами (как в оригинале)
+      paragraphs.push(new Paragraph({ children: [new TextRun("                                                                                                                                                                   Генеральному директору")] }));
+      paragraphs.push(new Paragraph({ children: [new TextRun('ООО "СМБ-сервис"')] }));
+      paragraphs.push(new Paragraph({ children: [new TextRun("Андрееву И.Н.")] }));
+      paragraphs.push(new Paragraph({ children: [new TextRun("")] }));
+
+      // Заголовок
+      paragraphs.push(new Paragraph({ children: [new TextRun("  заявление на возврат денежных средств")] }));
+      paragraphs.push(new Paragraph({ children: [new TextRun("")] }));
+
+      // Основной текст
+      const mainText = `  ООО  ${orgName}  просит произвести возврат денежных средств по договору   ${contractNumber}  в размере  ${amountNumeric} (${amountWords}), в том числе НДС по ставке в соответствии с действующим законодательством, по счету  ${accountNumber}`;
+      paragraphs.push(new Paragraph({ children: [new TextRun(mainText)] }));
+      paragraphs.push(new Paragraph({ children: [new TextRun("")] }));
+
+      // Причина возврата
+      paragraphs.push(new Paragraph({ children: [new TextRun(`Причина возврата:  ${refundReason}`)] }));
+      paragraphs.push(new Paragraph({ children: [new TextRun("")] }));
+
+      // Реквизиты
+      paragraphs.push(new Paragraph({ children: [new TextRun(`Реквизиты  ООО «${orgName}»`)] }));
+      paragraphs.push(new Paragraph({ children: [new TextRun(`ИНН ${inn}`)] }));
+
+      if (kpp !== "") {
+        paragraphs.push(new Paragraph({ children: [new TextRun(`КПП ${kpp}`)] }));
+      }
+
+      paragraphs.push(new Paragraph({ children: [new TextRun(`Банк  ${bank}`)] }));
+      paragraphs.push(new Paragraph({ children: [new TextRun(`р/сч ${checkingAccount}`)] }));
+      paragraphs.push(new Paragraph({ children: [new TextRun(`кор/сч ${correspondentAccount}`)] }));
+      paragraphs.push(new Paragraph({ children: [new TextRun(`БИК ${bik}`)] }));
+      paragraphs.push(new Paragraph({ children: [new TextRun("")] }));
+
+      // Подпись
+      paragraphs.push(new Paragraph({ children: [new TextRun(`${directorTitle}    `)] }));
+      paragraphs.push(new Paragraph({ children: [new TextRun(`  ______________/${directorName}/`)] }));
+      paragraphs.push(new Paragraph({ children: [new TextRun("")] }));
+
+      // М.П. — с отступом пробелами
+      paragraphs.push(new Paragraph({ children: [new TextRun("                                                                                                                             М.П.")] }));
+
+      // Создание документа
       const doc = new Document({
         sections: [{
-          children: [
-            new Paragraph({
-              children: [new TextRun(text)]
-            })
-          ]
+          children: paragraphs
         }]
       });
 
@@ -222,7 +232,7 @@ ${directorTitle}
         window.saveAs(blob, "Заявление_на_возврат_ДС.docx");
       }).catch(err => {
         console.error(err);
-        alert("Ошибка: не удалось создать документ. Убедитесь, что открыто в браузере с интернетом.");
+        alert("Ошибка при создании документа. Попробуйте обновить страницу.");
       });
     }
   </script>
