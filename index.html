@@ -170,67 +170,105 @@
       const directorName = document.getElementById("directorName").value.trim() || "________________________";
       const currentDate = getCurrentDate();
 
-      const { Document, Paragraph, TextRun, Packer } = window.docx;
+      const { Document, Paragraph, TextRun, Packer, AlignmentType } = window.docx;
 
       const paragraphs = [];
 
-      // Верх
+      // Верх: исходящий номер и дата (без выравнивания)
       paragraphs.push(new Paragraph({ children: [new TextRun(`Исх. №  ________`)] }));
       paragraphs.push(new Paragraph({ children: [new TextRun(`от   ${currentDate}`)] }));
-      paragraphs.push(new Paragraph({ children: [new TextRun("")] }));
+      paragraphs.push(new Paragraph({ children: [new TextRun("")] })); // пустая строка
 
-      // Адресат с отступом (пробелы как в оригинале)
+      // Адресат — с отступом пробелами (как в оригинале)
       paragraphs.push(new Paragraph({ children: [new TextRun("                                                                                                                                                                   Генеральному директору")] }));
       paragraphs.push(new Paragraph({ children: [new TextRun('ООО "СМБ-сервис"')] }));
       paragraphs.push(new Paragraph({ children: [new TextRun("Андрееву И.Н.")] }));
       paragraphs.push(new Paragraph({ children: [new TextRun("")] }));
 
-      // ЗАГОЛОВОК — ЖИРНЫЙ (без выравнивания!)
-      paragraphs.push(new Paragraph({ children: [new TextRun("заявление на возврат денежных средств").bold()] }));
+      // Заголовок — по центру или без выравнивания (в оригинале — с отступом)
+      paragraphs.push(new Paragraph({ 
+        children: [new TextRun("  заявление на возврат денежных средств")],
+        alignment: AlignmentType.LEFT
+      }));
       paragraphs.push(new Paragraph({ children: [new TextRun("")] }));
 
-      // Основной текст
-      const mainText = `  ООО  ${orgName}  просит произвести возврат денежных средств по договору   ${contractNumber}  в размере  ${amountNumeric} (${amountWords}), в том числе НДС по ставке в соответствии с действующим законодательством, по счету  ${accountNumber}`;
-      paragraphs.push(new Paragraph({ children: [new TextRun(mainText)] }));
+      // Основной текст — ВЫРАВНИВАНИЕ ПО ШИРИНЕ
+      const mainText = `ООО ${orgName} просит произвести возврат денежных средств по договору ${contractNumber} в размере ${amountNumeric} (${amountWords}), в том числе НДС по ставке в соответствии с действующим законодательством, по счету ${accountNumber}.`;
+      paragraphs.push(new Paragraph({ 
+        children: [new TextRun(mainText)],
+        alignment: AlignmentType.JUSTIFIED
+      }));
       paragraphs.push(new Paragraph({ children: [new TextRun("")] }));
 
-      // Причина
-      paragraphs.push(new Paragraph({ children: [new TextRun(`Причина возврата:  ${refundReason}`)] }));
+      // Причина возврата — выравнивание по ширине
+      paragraphs.push(new Paragraph({ 
+        children: [new TextRun(`Причина возврата: ${refundReason}`)],
+        alignment: AlignmentType.JUSTIFIED
+      }));
       paragraphs.push(new Paragraph({ children: [new TextRun("")] }));
 
-      // Реквизиты
-      paragraphs.push(new Paragraph({ children: [new TextRun(`Реквизиты  ООО «${orgName}»`)] }));
-      paragraphs.push(new Paragraph({ children: [new TextRun(`ИНН ${inn}`)] }));
+      // Реквизиты — выравнивание по ширине
+      paragraphs.push(new Paragraph({ 
+        children: [new TextRun(`Реквизиты ООО «${orgName}»`)],
+        alignment: AlignmentType.JUSTIFIED
+      }));
+      paragraphs.push(new Paragraph({ 
+        children: [new TextRun(`ИНН ${inn}`)],
+        alignment: AlignmentType.JUSTIFIED
+      }));
 
       if (kpp !== "") {
-        paragraphs.push(new Paragraph({ children: [new TextRun(`КПП ${kpp}`)] }));
+        paragraphs.push(new Paragraph({ 
+          children: [new TextRun(`КПП ${kpp}`)],
+          alignment: AlignmentType.JUSTIFIED
+        }));
       }
 
-      paragraphs.push(new Paragraph({ children: [new TextRun(`Банк  ${bank}`)] }));
-      paragraphs.push(new Paragraph({ children: [new TextRun(`р/сч ${checkingAccount}`)] }));
-      paragraphs.push(new Paragraph({ children: [new TextRun(`кор/сч ${correspondentAccount}`)] }));
-      paragraphs.push(new Paragraph({ children: [new TextRun(`БИК ${bik}`)] }));
+      paragraphs.push(new Paragraph({ 
+        children: [new TextRun(`Банк ${bank}`)],
+        alignment: AlignmentType.JUSTIFIED
+      }));
+      paragraphs.push(new Paragraph({ 
+        children: [new TextRun(`р/сч ${checkingAccount}`)],
+        alignment: AlignmentType.JUSTIFIED
+      }));
+      paragraphs.push(new Paragraph({ 
+        children: [new TextRun(`кор/сч ${correspondentAccount}`)],
+        alignment: AlignmentType.JUSTIFIED
+      }));
+      paragraphs.push(new Paragraph({ 
+        children: [new TextRun(`БИК ${bik}`)],
+        alignment: AlignmentType.JUSTIFIED
+      }));
       paragraphs.push(new Paragraph({ children: [new TextRun("")] }));
 
-      // Подпись
-      paragraphs.push(new Paragraph({ children: [new TextRun(`${directorTitle}    `)] }));
-      paragraphs.push(new Paragraph({ children: [new TextRun(`  ______________/${directorName}/`)] }));
+      // Подпись — без выравнивания (по левому краю с отступом)
+      paragraphs.push(new Paragraph({ 
+        children: [new TextRun(`${directorTitle}`)],
+        alignment: AlignmentType.LEFT
+      }));
+      paragraphs.push(new Paragraph({ 
+        children: [new TextRun(`______________/${directorName}/`)],
+        alignment: AlignmentType.LEFT
+      }));
       paragraphs.push(new Paragraph({ children: [new TextRun("")] }));
 
-      // М.П. с отступом
+      // М.П. — с отступом пробелами (справа)
       paragraphs.push(new Paragraph({ children: [new TextRun("                                                                                                                             М.П.")] }));
 
       // Создание документа
       const doc = new Document({
-        sections: [{ children: paragraphs }]
+        sections: [{
+          children: paragraphs
+        }]
       });
 
       // Скачивание
       Packer.toBlob(doc).then(blob => {
         window.saveAs(blob, "Заявление_на_возврат_ДС.docx");
       }).catch(err => {
-        console.error("Ошибка:", err);
-        alert("Не удалось создать документ. Попробуйте обновить страницу.");
+        console.error(err);
+        alert("Ошибка при создании документа. Попробуйте обновить страницу.");
       });
     }
   </script>
