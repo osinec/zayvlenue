@@ -3,89 +3,172 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Генератор документа Word</title>
+  <title>Заявление на возврат ДС по СМБ</title>
+  <!-- Подключаем библиотеки -->
   <script src="https://unpkg.com/docx@7.4.1/build/index.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      max-width: 600px;
-      margin: 40px auto;
+      font-family: Times New Roman, serif;
+      max-width: 700px;
+      margin: 30px auto;
       padding: 20px;
+      line-height: 1.6;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
     }
     label {
       display: block;
       margin-top: 15px;
+      font-weight: bold;
     }
     input, textarea {
       width: 100%;
       padding: 8px;
       margin-top: 5px;
       box-sizing: border-box;
+      font-family: inherit;
     }
     button {
-      margin-top: 20px;
-      padding: 10px 20px;
-      font-size: 16px;
+      margin-top: 25px;
+      padding: 12px 24px;
+      font-size: 18px;
+      background-color: #0056b3;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #003d82;
     }
   </style>
 </head>
 <body>
-  <h1>Заполните данные</h1>
+  <h2>Заполните данные для заявления на возврат денежных средств</h2>
 
-  <label for="name">Ваше имя:</label>
-  <input type="text" id="name" placeholder="Иван Иванов">
+  <label for="orgName">Наименование организации (ООО / ИП):</label>
+  <input type="text" id="orgName" placeholder="ООО «Ромашка»">
 
-  <label for="email">Ваш email:</label>
-  <input type="email" id="email" placeholder="ivan@example.com">
+  <label for="contractNumber">Номер договора:</label>
+  <input type="text" id="contractNumber" placeholder="№ Д-123/2024">
 
-  <label for="phone">Телефон (опционально):</label>
-  <input type="text" id="phone" placeholder="+7 (999) 123-45-67">
+  <label for="amountNumeric">Сумма цифрами (например: 150000.00):</label>
+  <input type="text" id="amountNumeric" placeholder="150000.00">
 
-  <button onclick="generateDocx()">Скачать документ Word</button>
+  <label for="amountWords">Сумма прописью (например: сто пятьдесят тысяч рублей 00 копеек):</label>
+  <input type="text" id="amountWords" placeholder="сто пятьдесят тысяч рублей 00 копеек">
+
+  <label for="accountNumber">Номер счета:</label>
+  <input type="text" id="accountNumber" placeholder="40702810123456789012">
+
+  <label for="refundReason">Причина возврата:</label>
+  <textarea id="refundReason" rows="2" placeholder="Неверно выставлен счёт"></textarea>
+
+  <label for="inn">ИНН:</label>
+  <input type="text" id="inn" placeholder="1234567890">
+
+  <label for="kpp">КПП (если ИП — оставьте пустым):</label>
+  <input type="text" id="kpp" placeholder="123456789">
+
+  <label for="bank">Банк:</label>
+  <input type="text" id="bank" placeholder="ПАО Сбербанк">
+
+  <label for="checkingAccount">Расчётный счёт:</label>
+  <input type="text" id="checkingAccount" placeholder="40702810123456789012">
+
+  <label for="correspondentAccount">Корреспондентский счёт:</label>
+  <input type="text" id="correspondentAccount" placeholder="30101810400000000225">
+
+  <label for="bik">БИК:</label>
+  <input type="text" id="bik" placeholder="044525225">
+
+  <label for="directorTitle">Должность руководителя (Генеральный директор / Директор / ИП):</label>
+  <input type="text" id="directorTitle" placeholder="Генеральный директор">
+
+  <label for="directorName">ФИО руководителя:</label>
+  <input type="text" id="directorName" placeholder="Иванов Иван Иванович">
+
+  <button onclick="generateStatement()">Скачать заявление (.docx)</button>
 
   <script>
-    function generateDocx() {
-      const name = document.getElementById("name").value || "[не указано]";
-      const email = document.getElementById("email").value || "[не указано]";
-      const phone = document.getElementById("phone").value || "[не указано]";
+    function getCurrentDate() {
+      const now = new Date();
+      const day = String(now.getDate()).padStart(2, '0');
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const year = now.getFullYear();
+      return `${day}.${month}.${year}`;
+    }
 
-      // Ваш шаблон текста с подстановкой данных
-      const templateText = `
-        Уважаемый(ая) ${name}!
+    function generateStatement() {
+      // Получаем данные
+      const orgName = document.getElementById("orgName").value || "[Наименование организации]";
+      const contractNumber = document.getElementById("contractNumber").value || "[номер договора]";
+      const amountNumeric = document.getElementById("amountNumeric").value || "[сумма]";
+      const amountWords = document.getElementById("amountWords").value || "[расшифровка суммы]";
+      const accountNumber = document.getElementById("accountNumber").value || "[номер счета]";
+      const refundReason = document.getElementById("refundReason").value || "________________________________________";
+      const inn = document.getElementById("inn").value || "________________________";
+      const kpp = document.getElementById("kpp").value;
+      const bank = document.getElementById("bank").value || "________________________";
+      const checkingAccount = document.getElementById("checkingAccount").value || "________________________";
+      const correspondentAccount = document.getElementById("correspondentAccount").value || "________________________";
+      const bik = document.getElementById("bik").value || "________________________";
+      const directorTitle = document.getElementById("directorTitle").value || "Генеральный директор";
+      const directorName = document.getElementById("directorName").value || "________________________";
 
-        Благодарим вас за обращение. Мы получили вашу заявку.
+      const currentDate = getCurrentDate();
 
-        Ваши контактные данные:
-        - Имя: ${name}
-        - Email: ${email}
-        - Телефон: ${phone}
+      // Формируем текст заявления
+      let statementText = `Исх. №  ________\n`;
+      statementText += `от   ${currentDate}\n\n`;
+      statementText += `                                                                                                                                                                   Генеральному директору\n`;
+      statementText += `ООО "СМБ-сервис"\n`;
+      statementText += `Андрееву И.Н.\n\n`;
+      statementText += `  заявление на возврат денежных средств\n\n`;
+      statementText += `  ООО  ${orgName}  просит произвести возврат денежных средств по договору   ${contractNumber}  в размере  ${amountNumeric} (${amountWords}), в том числе НДС по ставке в соответствии с действующим законодательством, по счету  ${accountNumber}\n\n`;
+      statementText += `Причина возврата:  ${refundReason}\n\n`;
+      statementText += `Реквизиты  ООО «${orgName}»\n`;
+      statementText += `ИНН ${inn}\n`;
 
-        Скоро с вами свяжется наш менеджер.
+      if (kpp.trim() !== "") {
+        statementText += `КПП ${kpp}\n`;
+      } else {
+        // Если КПП не указан — строка опускается (как в шаблоне для ИП)
+      }
 
-        С уважением,
-        Команда поддержки
-      `.trim();
+      statementText += `Банк  ${bank}\n`;
+      statementText += `р/сч ${checkingAccount}\n`;
+      statementText += `кор/сч ${correspondentAccount}\n`;
+      statementText += `БИК ${bik}\n\n`;
+      statementText += `${directorTitle}    \n`;
+      statementText += `______________/${directorName}/\n\n`;
+      statementText += `                                                                                                                             М.П.`;
 
       // Создание документа с помощью docx
-      const { Document, Paragraph, TextRun, Packer } = window.docx;
+      const { Document, Paragraph, TextRun, Packer, AlignmentType } = window.docx;
+
+      // Разбиваем текст на строки и создаём параграфы с сохранением отступов
+      const lines = statementText.split('\n');
+      const paragraphs = lines.map(line => {
+        return new Paragraph({
+          children: [new TextRun(line)],
+          alignment: line.trim() === "" ? AlignmentType.LEFT : AlignmentType.LEFT,
+          spacing: { after: 100 } // небольшой интервал между строками
+        });
+      });
 
       const doc = new Document({
         sections: [{
           properties: {},
-          children: [
-            new Paragraph({
-              children: [
-                new TextRun(templateText)
-              ],
-            }),
-          ],
-        }],
+          children: paragraphs
+        }]
       });
 
-      // Генерация и скачивание файла
+      // Скачивание
       Packer.toBlob(doc).then(blob => {
-        saveAs(blob, "документ.docx");
+        saveAs(blob, "Заявление_на_возврат_ДС.docx");
       });
     }
   </script>
