@@ -148,138 +148,150 @@
   </div>
 
   <script>
-    // Функция для преобразования числа в сумму прописью (рубли и копейки)
+    // Вспомогательные массивы
+    const units = ["", "один", "два", "три", "четыре", "пять", "шесть", "семь", "восемь", "девять"];
+    const unitsFem = ["", "одна", "две", "три", "четыре", "пять", "шесть", "семь", "восемь", "девять"];
+    const teens = ["десять", "одиннадцать", "двенадцать", "тринадцать", "четырнадцать", "пятнадцать", "шестнадцать", "семнадцать", "восемнадцать", "девятнадцать"];
+    const tens = ["", "", "двадцать", "тридцать", "сорок", "пятьдесят", "шестьдесят", "семьдесят", "восемьдесят", "девяносто"];
+    const hundreds = ["", "сто", "двести", "триста", "четыреста", "пятьсот", "шестьсот", "семьсот", "восемьсот", "девятьсот"];
+
+    // Склонение для тысяч
+    function getThousandForm(n) {
+      if (n % 100 > 10 && n % 100 < 20) return "тысяч";
+      if (n % 10 === 1) return "тысяча";
+      if (n % 10 === 2 || n % 10 === 3 || n % 10 === 4) return "тысячи";
+      return "тысяч";
+    }
+
+    // Склонение для рублей
+    function getRubleForm(n) {
+      if (n % 100 > 10 && n % 100 < 20) return "рублей";
+      if (n % 10 === 1) return "рубль";
+      if (n % 10 === 2 || n % 10 === 3 || n % 10 === 4) return "рубля";
+      return "рублей";
+    }
+
+    // Склонение для копеек
+    function getKopeckForm(n) {
+      if (n % 100 > 10 && n % 100 < 20) return "копеек";
+      if (n % 10 === 1) return "копейка";
+      if (n % 10 === 2 || n % 10 === 3 || n % 10 === 4) return "копейки";
+      return "копеек";
+    }
+
+    // Преобразование трёхзначного числа в слова
+    function convertHundreds(n) {
+      if (n === 0) return "";
+      let result = "";
+      let h = Math.floor(n / 100);
+      let r = n % 100;
+      if (h > 0) result += hundreds[h] + " ";
+      if (r < 10) {
+        if (r > 0) result += units[r] + " ";
+      } else if (r < 20) {
+        result += teens[r - 10] + " ";
+      } else {
+        let t = Math.floor(r / 10);
+        let o = r % 10;
+        result += tens[t] + " ";
+        if (o > 0) result += units[o] + " ";
+      }
+      return result;
+    }
+
+    // Основная функция
     function numberToWordsRubles(num) {
       if (typeof num !== 'number' || isNaN(num) || num < 0 || num >= 1e9) {
-        return '';
+        return "";
       }
 
       const rubles = Math.floor(num);
       const kopecks = Math.round((num - rubles) * 100);
 
-      // --- Склонение рублей ---
-      function rublesToWords(n) {
-        const words = [
-          ['', 'один', 'два', 'три', 'четыре', 'пять', 'шесть', 'семь', 'восемь', 'девять'],
-          ['', 'десять', 'двадцать', 'тридцать', 'сорок', 'пятьдесят', 'шестьдесят', 'семьдесят', 'восемьдесят', 'девяносто'],
-          ['', 'сто', 'двести', 'триста', 'четыреста', 'пятьсот', 'шестьсот', 'семьсот', 'восемьсот', 'девятьсот'],
-          ['тысяча', 'тысячи', 'тысяч']
-        ];
-
-        if (n === 0) return 'ноль';
-
-        let result = '';
-        let s = n.toString().padStart(9, '0');
-        let billions = s.substr(0, 3); // не используется (лимит 999 млн)
-        let millions = s.substr(3, 3);
-        let thousands = s.substr(6, 3);
-        let units = s.substr(9, 3);
-
-        function getTriplet(tripletStr, isThousand = false) {
-          let t = parseInt(tripletStr, 10);
-          if (t === 0) return '';
-
-          let h = Math.floor(t / 100);
-          let r = t % 100;
-          let tens = Math.floor(r / 10);
-          let ones = r % 10;
-
-          let out = '';
-          if (h > 0) out += words[2][h] + ' ';
-
-          if (tens === 1) {
-            const teens = ['', 'одиннадцать', 'двенадцать', 'тринадцать', 'четырнадцать', 'пятнадцать', 'шестнадцать', 'семнадцать', 'восемнадцать', 'девятнадцать'];
-            out += teens[ones] + ' ';
-          } else {
-            if (tens > 0) out += words[1][tens] + ' ';
-            if (ones > 0) {
-              if (isThousand && ones === 1) out += 'одна ';
-              else if (isThousand && ones === 2) out += 'две ';
-              else out += words[0][ones] + ' ';
-            }
-          }
-
-          return out;
-        }
-
-        if (parseInt(millions, 10) > 0) {
-          result += getTriplet(millions) + 'миллион ';
-          let nMill = parseInt(millions, 10);
-          if (nMill % 100 > 10 && nMill % 100 < 20) result += 'миллионов ';
-          else if (nMill % 10 === 1) result += 'миллион ';
-          else if ([2,3,4].includes(nMill % 10)) result += 'миллиона ';
-          else result += 'миллионов ';
-        }
-
-        if (parseInt(thousands, 10) > 0) {
-          result += getTriplet(thousands, true);
-          let nTh = parseInt(thousands, 10);
-          if (nTh % 100 > 10 && nTh % 100 < 20) result += 'тысяч ';
-          else if (nTh % 10 === 1) result += 'тысяча ';
-          else if ([2,3,4].includes(nTh % 10)) result += 'тысячи ';
-          else result += 'тысяч ';
-        }
-
-        if (parseInt(units, 10) > 0) {
-          result += getTriplet(units);
-        }
-
-        result = result.trim();
-
-        // Склонение "рубль"
-        if (rubles === 0) {
-          result = 'ноль';
-        }
-
-        let rubWord = '';
-        if (rubles % 100 > 10 && rubles % 100 < 20) rubWord = 'рублей';
-        else if (rubles % 10 === 1) rubWord = 'рубль';
-        else if ([2,3,4].includes(rubles % 10)) rubWord = 'рубля';
-        else rubWord = 'рублей';
-
-        return result + ' ' + rubWord;
+      if (rubles === 0 && kopecks === 0) {
+        return "ноль рублей 00 копеек";
       }
 
-      // --- Склонение копеек ---
-      let kopeckWord = '';
-      if (kopecks % 100 > 10 && kopecks % 100 < 20) kopeckWord = 'копеек';
-      else if (kopecks % 10 === 1) kopeckWord = 'копейка';
-      else if ([2,3,4].includes(kopecks % 10)) kopeckWord = 'копейки';
-      else kopeckWord = 'копеек';
+      let words = "";
 
-      let rublesText = rublesToWords(rubles);
-      let kopecksText = `${String(kopecks).padStart(2, '0')} ${kopeckWord}`;
+      // Обработка миллионов (опционально, но оставим для полноты до 999 млн)
+      const millions = Math.floor(rubles / 1000000);
+      const remainderAfterMillions = rubles % 1000000;
+      if (millions > 0) {
+        words += convertHundreds(millions) + "миллион ";
+        if (millions % 100 > 10 && millions % 100 < 20) words += "миллионов ";
+        else if (millions % 10 === 1) words += "миллион ";
+        else if ([2,3,4].includes(millions % 10)) words += "миллиона ";
+        else words += "миллионов ";
+      }
 
-      return `${rublesText} ${kopecksText}`;
+      // Обработка тысяч
+      const thousands = Math.floor(remainderAfterMillions / 1000);
+      const remainder = remainderAfterMillions % 1000;
+      if (thousands > 0) {
+        let thousandWords = convertHundreds(thousands).replace(/один /, "одна ").replace(/два /, "две ");
+        words += thousandWords + getThousandForm(thousands) + " ";
+      }
+
+      // Обработка рублей (остаток до 1000)
+      if (remainder > 0 || rubles === 0) {
+        if (remainder === 0 && rubles > 0) {
+          // ничего не добавляем (например, ровно 1000)
+        } else {
+          words += convertHundreds(remainder);
+        }
+      }
+
+      // Добавляем "рублей" с правильным склонением
+      if (rubles === 0) {
+        words = "ноль ";
+      }
+      words = words.trim();
+      words += " " + getRubleForm(rubles);
+
+      // Копейки
+      const kopeckWord = getKopeckForm(kopecks);
+      const kopecksPadded = String(kopecks).padStart(2, '0');
+
+      return (words + " " + kopecksPadded + " " + kopeckWord).trim();
     }
 
-    // Обновление поля "сумма прописью" при вводе
+    // Обновление поля "сумма прописью"
     function updateAmountWords() {
-      const amountStr = document.getElementById("amountNumeric").value.trim();
-      let amount = parseFloat(amountStr.replace(/[^0-9.,]/g, '').replace(',', '.'));
-      if (!isNaN(amount) && amount >= 0) {
-        const words = numberToWordsRubles(amount);
-        document.getElementById("amountWords").value = words;
-      } else {
+      const input = document.getElementById("amountNumeric").value.trim();
+      if (input === "") {
         document.getElementById("amountWords").value = "";
+        return;
+      }
+
+      // Очистка от лишних символов, замена запятой на точку
+      const clean = input.replace(/[^0-9.,]/g, '').replace(',', '.');
+      const num = parseFloat(clean);
+
+      if (isNaN(num) || num < 0 || num >= 1e9) {
+        document.getElementById("amountWords").value = "";
+      } else {
+        document.getElementById("amountWords").value = numberToWordsRubles(num);
       }
     }
 
+    // Получение текущей даты
     function getCurrentDate() {
       const now = new Date();
       return `${String(now.getDate()).padStart(2, '0')}.${String(now.getMonth() + 1).padStart(2, '0')}.${now.getFullYear()}`;
     }
 
+    // Генерация документа
     function generateStatement() {
       const orgName = document.getElementById("orgName").value.trim() || "[Наименование организации]";
       const contractNumber = document.getElementById("contractNumber").value.trim() || "[номер договора]";
       const amountNumeric = document.getElementById("amountNumeric").value.trim() || "[сумма]";
       let amountWords = document.getElementById("amountWords").value.trim();
 
-      // Если сумма прописью не заполнена — генерируем автоматически
       if (!amountWords) {
-        const num = parseFloat(amountNumeric.replace(/[^0-9.,]/g, '').replace(',', '.'));
-        if (!isNaN(num)) {
+        const clean = amountNumeric.replace(/[^0-9.,]/g, '').replace(',', '.');
+        const num = parseFloat(clean);
+        if (!isNaN(num) && num >= 0 && num < 1e9) {
           amountWords = numberToWordsRubles(num);
         } else {
           amountWords = "[сумма прописью]";
