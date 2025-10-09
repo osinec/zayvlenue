@@ -80,7 +80,7 @@
 
     <div class="form-group">
       <label>Номер договора:</label>
-      <input type="text" id="contractNumber" placeholder="2025/09/10-1225866" oninput="formatContractNumber(this)">
+      <input type="text" id="contractNumber" placeholder="2025/09/10-1225866-smb" oninput="validateContract()">
     </div>
 
     <div class="form-group">
@@ -152,45 +152,25 @@
   </div>
 
   <script>
-    // Только цифры
+    // Разрешить только цифры
     function onlyDigits(input) {
       input.value = input.value.replace(/\D/g, '');
       input.classList.remove('invalid');
     }
 
-    // Маска для номера договора: ГГГГ/ММ/ДД-ЦИФРЫ
-    function formatContractNumber(input) {
-      let value = input.value.replace(/\D/g, ''); // оставляем только цифры
-
-      // Ограничим общую длину: 4+2+2+7 = 15 цифр (можно увеличить при необходимости)
-      if (value.length > 15) value = value.substring(0, 15);
-
-      let formatted = '';
-      if (value.length >= 4) {
-        formatted = value.substring(0, 4);
-        if (value.length >= 6) {
-          formatted += '/' + value.substring(4, 6);
-          if (value.length >= 8) {
-            formatted += '/' + value.substring(6, 8);
-            if (value.length > 8) {
-              formatted += '-' + value.substring(8);
-            }
-          }
-        }
+    // Валидация номера договора
+    function validateContract() {
+      const input = document.getElementById('contractNumber');
+      const value = input.value.trim();
+      const pattern = /^\d{4}\/\d{2}\/\d{2}-\d+-smb$/;
+      if (value === '' || pattern.test(value)) {
+        input.classList.remove('invalid');
       } else {
-        formatted = value;
+        input.classList.add('invalid');
       }
-
-      input.value = formatted;
-      input.classList.remove('invalid');
     }
 
-    // Валидация: ГГГГ/ММ/ДД-ЦИФРЫ (минимум одна цифра после тире)
-    function validateContractNumber(value) {
-      return /^\d{4}\/\d{2}\/\d{2}-\d+$/.test(value);
-    }
-
-    // === Остальной код без изменений ===
+    // Вспомогательные массивы
     const units = ["", "один", "два", "три", "четыре", "пять", "шесть", "семь", "восемь", "девять"];
     const unitsFem = ["", "одна", "две", "три", "четыре", "пять", "шесть", "семь", "восемь", "девять"];
     const teens = ["десять", "одиннадцать", "двенадцать", "тринадцать", "четырнадцать", "пятнадцать", "шестнадцать", "семнадцать", "восемнадцать", "девятнадцать"];
@@ -310,11 +290,11 @@
     }
 
     function generateStatement() {
+      // Проверка договора
       const contractInput = document.getElementById("contractNumber");
       const contractValue = contractInput.value.trim();
-
-      if (contractValue !== '' && !validateContractNumber(contractValue)) {
-        alert('Номер договора должен быть в формате: ГГГГ/ММ/ДД-ЦИФРЫ (например: 2025/09/10-1225866)');
+      if (contractValue !== '' && !/^\d{4}\/\d{2}\/\d{2}-\d+-smb$/.test(contractValue)) {
+        alert('Номер договора должен быть в формате: ГГГГ/ММ/ДД-ЦИФРЫ-smb (например: 2025/09/10-1225866-smb)');
         contractInput.classList.add('invalid');
         contractInput.focus();
         return;
