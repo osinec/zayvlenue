@@ -43,6 +43,10 @@
       font-family: inherit;
       font-size: 15px;
     }
+    input.invalid {
+      border-color: #e74c3c;
+      background-color: #fff5f5;
+    }
     button {
       width: 100%;
       padding: 14px;
@@ -76,7 +80,7 @@
 
     <div class="form-group">
       <label>Номер договора:</label>
-      <input type="text" id="contractNumber" placeholder="№20ХХ/ХХ/ХХ-ХХХХХХ-smb">
+      <input type="text" id="contractNumber" placeholder="2025/09/10-1225866" oninput="formatContractNumber(this)">
     </div>
 
     <div class="form-group">
@@ -91,7 +95,7 @@
 
     <div class="form-group">
       <label>Номер счёта:</label>
-      <input type="text" id="accountNumber" placeholder="40702810123456789012">
+      <input type="text" id="accountNumber" placeholder="40702810123456789012" oninput="onlyDigits(this)">
     </div>
 
     <div class="form-group">
@@ -101,12 +105,12 @@
 
     <div class="form-group">
       <label>ИНН:</label>
-      <input type="text" id="inn" placeholder="1234567890">
+      <input type="text" id="inn" placeholder="1234567890" oninput="onlyDigits(this)" maxlength="12">
     </div>
 
     <div class="form-group">
       <label>КПП (если ИП — оставьте пустым):</label>
-      <input type="text" id="kpp" placeholder="123456789">
+      <input type="text" id="kpp" placeholder="123456789" oninput="onlyDigits(this)" maxlength="9">
       <div class="note">Для ИП строка КПП будет удалена из заявления.</div>
     </div>
 
@@ -117,17 +121,17 @@
 
     <div class="form-group">
       <label>Расчётный счёт:</label>
-      <input type="text" id="checkingAccount" placeholder="40702810123456789012">
+      <input type="text" id="checkingAccount" placeholder="40702810123456789012" oninput="onlyDigits(this)" maxlength="20">
     </div>
 
     <div class="form-group">
       <label>Корреспондентский счёт:</label>
-      <input type="text" id="correspondentAccount" placeholder="30101810400000000225">
+      <input type="text" id="correspondentAccount" placeholder="30101810400000000225" oninput="onlyDigits(this)" maxlength="20">
     </div>
 
     <div class="form-group">
       <label>БИК:</label>
-      <input type="text" id="bik" placeholder="044525225">
+      <input type="text" id="bik" placeholder="044525225" oninput="onlyDigits(this)" maxlength="9">
     </div>
 
     <div class="form-group">
@@ -148,14 +152,51 @@
   </div>
 
   <script>
-    // Вспомогательные массивы
+    // Только цифры
+    function onlyDigits(input) {
+      input.value = input.value.replace(/\D/g, '');
+      input.classList.remove('invalid');
+    }
+
+    // Маска для номера договора: ГГГГ/ММ/ДД-ЦИФРЫ
+    function formatContractNumber(input) {
+      let value = input.value.replace(/\D/g, ''); // оставляем только цифры
+
+      // Ограничим общую длину: 4+2+2+7 = 15 цифр (можно увеличить при необходимости)
+      if (value.length > 15) value = value.substring(0, 15);
+
+      let formatted = '';
+      if (value.length >= 4) {
+        formatted = value.substring(0, 4);
+        if (value.length >= 6) {
+          formatted += '/' + value.substring(4, 6);
+          if (value.length >= 8) {
+            formatted += '/' + value.substring(6, 8);
+            if (value.length > 8) {
+              formatted += '-' + value.substring(8);
+            }
+          }
+        }
+      } else {
+        formatted = value;
+      }
+
+      input.value = formatted;
+      input.classList.remove('invalid');
+    }
+
+    // Валидация: ГГГГ/ММ/ДД-ЦИФРЫ (минимум одна цифра после тире)
+    function validateContractNumber(value) {
+      return /^\d{4}\/\d{2}\/\d{2}-\d+$/.test(value);
+    }
+
+    // === Остальной код без изменений ===
     const units = ["", "один", "два", "три", "четыре", "пять", "шесть", "семь", "восемь", "девять"];
     const unitsFem = ["", "одна", "две", "три", "четыре", "пять", "шесть", "семь", "восемь", "девять"];
     const teens = ["десять", "одиннадцать", "двенадцать", "тринадцать", "четырнадцать", "пятнадцать", "шестнадцать", "семнадцать", "восемнадцать", "девятнадцать"];
     const tens = ["", "", "двадцать", "тридцать", "сорок", "пятьдесят", "шестьдесят", "семьдесят", "восемьдесят", "девяносто"];
     const hundreds = ["", "сто", "двести", "триста", "четыреста", "пятьсот", "шестьсот", "семьсот", "восемьсот", "девятьсот"];
 
-    // Склонение для тысяч
     function getThousandForm(n) {
       if (n % 100 > 10 && n % 100 < 20) return "тысяч";
       if (n % 10 === 1) return "тысяча";
@@ -163,7 +204,6 @@
       return "тысяч";
     }
 
-    // Склонение для рублей
     function getRubleForm(n) {
       if (n % 100 > 10 && n % 100 < 20) return "рублей";
       if (n % 10 === 1) return "рубль";
@@ -171,7 +211,6 @@
       return "рублей";
     }
 
-    // Склонение для копеек
     function getKopeckForm(n) {
       if (n % 100 > 10 && n % 100 < 20) return "копеек";
       if (n % 10 === 1) return "копейка";
@@ -179,7 +218,6 @@
       return "копеек";
     }
 
-    // Преобразование трёхзначного числа в слова
     function convertHundreds(n) {
       if (n === 0) return "";
       let result = "";
@@ -199,7 +237,6 @@
       return result;
     }
 
-    // Основная функция
     function numberToWordsRubles(num) {
       if (typeof num !== 'number' || isNaN(num) || num < 0 || num >= 1e9) {
         return "";
@@ -214,7 +251,6 @@
 
       let words = "";
 
-      // Обработка миллионов
       const millions = Math.floor(rubles / 1000000);
       const remainderAfterMillions = rubles % 1000000;
       if (millions > 0) {
@@ -225,7 +261,6 @@
         else words += "миллионов ";
       }
 
-      // Обработка тысяч
       const thousands = Math.floor(remainderAfterMillions / 1000);
       const remainder = remainderAfterMillions % 1000;
       if (thousands > 0) {
@@ -233,30 +268,25 @@
         words += thousandWords + getThousandForm(thousands) + " ";
       }
 
-      // Обработка рублей (остаток до 1000)
       if (remainder > 0 || rubles === 0) {
         if (remainder === 0 && rubles > 0) {
-          // ничего не добавляем (например, ровно 1000)
         } else {
           words += convertHundreds(remainder);
         }
       }
 
-      // Добавляем "рублей" с правильным склонением
       if (rubles === 0) {
         words = "ноль ";
       }
       words = words.trim();
       words += " " + getRubleForm(rubles);
 
-      // Копейки
       const kopeckWord = getKopeckForm(kopecks);
       const kopecksPadded = String(kopecks).padStart(2, '0');
 
       return (words + " " + kopecksPadded + " " + kopeckWord).trim();
     }
 
-    // Обновление поля "сумма прописью"
     function updateAmountWords() {
       const input = document.getElementById("amountNumeric").value.trim();
       if (input === "") {
@@ -264,7 +294,6 @@
         return;
       }
 
-      // Очистка от лишних символов, замена запятой на точку
       const clean = input.replace(/[^0-9.,]/g, '').replace(',', '.');
       const num = parseFloat(clean);
 
@@ -275,16 +304,24 @@
       }
     }
 
-    // Получение текущей даты
     function getCurrentDate() {
       const now = new Date();
       return `${String(now.getDate()).padStart(2, '0')}.${String(now.getMonth() + 1).padStart(2, '0')}.${now.getFullYear()}`;
     }
 
-    // Генерация документа
     function generateStatement() {
+      const contractInput = document.getElementById("contractNumber");
+      const contractValue = contractInput.value.trim();
+
+      if (contractValue !== '' && !validateContractNumber(contractValue)) {
+        alert('Номер договора должен быть в формате: ГГГГ/ММ/ДД-ЦИФРЫ (например: 2025/09/10-1225866)');
+        contractInput.classList.add('invalid');
+        contractInput.focus();
+        return;
+      }
+
       const orgName = document.getElementById("orgName").value.trim() || "[Наименование организации]";
-      const contractNumber = document.getElementById("contractNumber").value.trim() || "[номер договора]";
+      const contractNumber = contractValue || "[номер договора]";
       const amountNumeric = document.getElementById("amountNumeric").value.trim() || "[сумма]";
       let amountWords = document.getElementById("amountWords").value.trim();
 
@@ -318,7 +355,6 @@
       paragraphs.push(new Paragraph({ children: [new TextRun(`от   ${currentDate}`)] }));
       paragraphs.push(new Paragraph({ children: [new TextRun("")] }));
 
-      // Выравнивание по ПРАВОМУ краю
       paragraphs.push(new Paragraph({
         children: [new TextRun("Генеральному директору")],
         alignment: AlignmentType.RIGHT
