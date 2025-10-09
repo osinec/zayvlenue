@@ -76,7 +76,7 @@
 
     <div class="form-group">
       <label>Номер договора:</label>
-      <input type="text" id="contractNumber" placeholder="№ Д-123/2024">
+      <input type="text" id="contractNumber" placeholder="№20ХХ/ХХ/ХХ-ХХХХХХ-smb">
     </div>
 
     <div class="form-group">
@@ -214,11 +214,11 @@
 
       let words = "";
 
-      // Обработка миллионов (опционально, но оставим для полноты до 999 млн)
+      // Обработка миллионов
       const millions = Math.floor(rubles / 1000000);
       const remainderAfterMillions = rubles % 1000000;
       if (millions > 0) {
-        words += convertHundreds(millions) + "миллион ";
+        words += convertHundreds(millions) + " ";
         if (millions % 100 > 10 && millions % 100 < 20) words += "миллионов ";
         else if (millions % 10 === 1) words += "миллион ";
         else if ([2,3,4].includes(millions % 10)) words += "миллиона ";
@@ -318,9 +318,19 @@
       paragraphs.push(new Paragraph({ children: [new TextRun(`от   ${currentDate}`)] }));
       paragraphs.push(new Paragraph({ children: [new TextRun("")] }));
 
-      paragraphs.push(new Paragraph({ children: [new TextRun("                                                                                                                                                                   Генеральному директору")] }));
-      paragraphs.push(new Paragraph({ children: [new TextRun('ООО "СМБ-сервис"')] }));
-      paragraphs.push(new Paragraph({ children: [new TextRun("Андрееву И.Н.")] }));
+      // Выравнивание по ПРАВОМУ краю
+      paragraphs.push(new Paragraph({
+        children: [new TextRun("Генеральному директору")],
+        alignment: AlignmentType.RIGHT
+      }));
+      paragraphs.push(new Paragraph({
+        children: [new TextRun('ООО "СМБ-сервис"')],
+        alignment: AlignmentType.RIGHT
+      }));
+      paragraphs.push(new Paragraph({
+        children: [new TextRun("Андрееву И.Н.")],
+        alignment: AlignmentType.RIGHT
+      }));
       paragraphs.push(new Paragraph({ children: [new TextRun("")] }));
 
       paragraphs.push(new Paragraph({
