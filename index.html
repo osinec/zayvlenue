@@ -67,6 +67,11 @@
       font-style: italic;
       margin-top: 5px;
     }
+    .format-example {
+      font-size: 12px;
+      color: #666;
+      margin-top: 4px;
+    }
   </style>
 </head>
 <body>
@@ -80,7 +85,8 @@
 
     <div class="form-group">
       <label>Номер договора:</label>
-      <input type="text" id="contractNumber" placeholder="2025/09/10-1225866-smb" oninput="validateContract()">
+      <input type="text" id="contractNumber" placeholder="2025/04/15-1200593-smb" oninput="validateContract()">
+      <div class="format-example">Допустимые форматы: 2025/04/15-1200593-smb или 2025/04/15-1200593-adv</div>
     </div>
 
     <div class="form-group">
@@ -95,7 +101,7 @@
 
     <div class="form-group">
       <label>Номер счёта:</label>
-      <input type="text" id="accountNumber" placeholder="40702810123456789012" oninput="onlyDigits(this)">
+      <input type="text" id="accountNumber" placeholder="ЛСС-5241854660-1" oninput="onlyDigits(this)">
     </div>
 
     <div class="form-group">
@@ -158,11 +164,12 @@
       input.classList.remove('invalid');
     }
 
-    // Валидация номера договора
+    // Валидация номера договора для форматов: 2025/04/15-1200593-smb и 2025/04/15-1200593-adv
     function validateContract() {
       const input = document.getElementById('contractNumber');
       const value = input.value.trim();
-      const pattern = /^\d{4}\/\d{2}\/\d{2}-\d+-smb$/;
+      // Регулярное выражение для двух форматов: -smb и -adv
+      const pattern = /^\d{4}\/\d{2}\/\d{2}-\d+-(smb|adv)$/;
       if (value === '' || pattern.test(value)) {
         input.classList.remove('invalid');
       } else {
@@ -290,11 +297,13 @@
     }
 
     function generateStatement() {
-      // Проверка договора
+      // Проверка договора для двух форматов: -smb и -adv
       const contractInput = document.getElementById("contractNumber");
       const contractValue = contractInput.value.trim();
-      if (contractValue !== '' && !/^\d{4}\/\d{2}\/\d{2}-\d+-smb$/.test(contractValue)) {
-        alert('Номер договора должен быть в формате: ГГГГ/ММ/ДД-ЦИФРЫ-smb (например: 2025/09/10-1225866-smb)');
+      const contractPattern = /^\d{4}\/\d{2}\/\d{2}-\d+-(smb|adv)$/;
+      
+      if (contractValue !== '' && !contractPattern.test(contractValue)) {
+        alert('Номер договора должен быть в формате: ГГГГ/ММ/ДД-ЦИФРЫ-smb или ГГГГ/ММ/ДД-ЦИФРЫ-adv (например: 2025/04/15-1200593-smb или 2025/04/15-1200593-adv)');
         contractInput.classList.add('invalid');
         contractInput.focus();
         return;
@@ -331,7 +340,8 @@
 
       const paragraphs = [];
 
-      paragraphs.push(new Paragraph({ children: [new TextRun(`Исх. №  ________`)] }));
+      // Номер исходящего документа всегда "1"
+      paragraphs.push(new Paragraph({ children: [new TextRun("Исх. № 1")] }));
       paragraphs.push(new Paragraph({ children: [new TextRun(`от   ${currentDate}`)] }));
       paragraphs.push(new Paragraph({ children: [new TextRun("")] }));
 
