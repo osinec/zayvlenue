@@ -92,7 +92,7 @@
     <div class="form-group">
       <label>Сумма цифрами:</label>
       <input type="text" id="amountNumeric" placeholder="1332783.40" oninput="validateAmount()">
-          </div>
+</div>
 
     <div class="form-group">
       <label>Сумма прописью:</label>
@@ -499,17 +499,29 @@
       }));
       paragraphs.push(new Paragraph({ children: [new TextRun("")] }));
 
+      // Должность слева
       paragraphs.push(new Paragraph({
         children: [new TextRun(`${directorTitle}`)],
         alignment: AlignmentType.LEFT
       }));
-      paragraphs.push(new Paragraph({
-        children: [new TextRun(`______________/${directorName}/`)],
-        alignment: AlignmentType.LEFT
-      }));
+
       paragraphs.push(new Paragraph({ children: [new TextRun("")] }));
 
-      paragraphs.push(new Paragraph({ children: [new TextRun("                                                                                                                             М.П.")] }));
+      // Подпись и печать справа
+      paragraphs.push(new Paragraph({
+        children: [new TextRun("                                                                                                                             ______________ /______________ /")],
+        alignment: AlignmentType.LEFT
+      }));
+
+      paragraphs.push(new Paragraph({
+        children: [new TextRun("")],
+        alignment: AlignmentType.LEFT
+      }));
+
+      paragraphs.push(new Paragraph({
+        children: [new TextRun("                                                                                                                             М.П.")],
+        alignment: AlignmentType.LEFT
+      }));
 
       const doc = new Document({
         sections: [{
