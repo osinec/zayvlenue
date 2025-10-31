@@ -91,17 +91,18 @@
 
     <div class="form-group">
       <label>Сумма цифрами:</label>
-      <input type="text" id="amountNumeric" placeholder="150000.00" oninput="updateAmountWords()">
+      <input type="text" id="amountNumeric" placeholder="1332783.40" oninput="updateAmountWords()">
     </div>
 
     <div class="form-group">
       <label>Сумма прописью:</label>
-      <input type="text" id="amountWords" placeholder="сто пятьдесят тысяч рублей 00 копеек" readonly>
+      <input type="text" id="amountWords" placeholder="один миллион триста тридцать две тысячи семьсот восемьдесят три рубля сорок копеек" readonly>
     </div>
 
     <div class="form-group">
       <label>Номер счёта:</label>
-      <input type="text" id="accountNumber" placeholder="ЛСС-5241854660-1" oninput="onlyDigits(this)">
+      <input type="text" id="accountNumber" placeholder="ЛСС-5372098916-1" oninput="validateAccountNumber()">
+      <div class="format-example">Формат:ЛСС-5372098916-1</div>
     </div>
 
     <div class="form-group">
@@ -177,6 +178,19 @@
       }
     }
 
+    // Валидация номера счёта для формата: ЛСС-5372098916-1
+    function validateAccountNumber() {
+      const input = document.getElementById('accountNumber');
+      const value = input.value.trim();
+      // Регулярное выражение для формата: ЛСС-5372098916-1
+      const pattern = /^ЛСС-\d{10}-\d$/;
+      if (value === '' || pattern.test(value)) {
+        input.classList.remove('invalid');
+      } else {
+        input.classList.add('invalid');
+      }
+    }
+
     // Вспомогательные массивы
     const units = ["", "один", "два", "три", "четыре", "пять", "шесть", "семь", "восемь", "девять"];
     const unitsFem = ["", "одна", "две", "три", "четыре", "пять", "шесть", "семь", "восемь", "девять"];
@@ -224,6 +238,26 @@
       return result;
     }
 
+    // Функция для преобразования числа в слова (для копеек)
+    function numberToWordsKopecks(num) {
+      if (num === 0) return "ноль";
+      
+      let words = "";
+
+      if (num < 10) {
+        words = units[num];
+      } else if (num < 20) {
+        words = teens[num - 10];
+      } else {
+        let t = Math.floor(num / 10);
+        let o = num % 10;
+        words = tens[t];
+        if (o > 0) words += " " + units[o];
+      }
+      
+      return words;
+    }
+
     function numberToWordsRubles(num) {
       if (typeof num !== 'number' || isNaN(num) || num < 0 || num >= 1e9) {
         return "";
@@ -233,7 +267,7 @@
       const kopecks = Math.round((num - rubles) * 100);
 
       if (rubles === 0 && kopecks === 0) {
-        return "ноль рублей 00 копеек";
+        return "ноль рублей ноль копеек";
       }
 
       let words = "";
@@ -268,10 +302,23 @@
       words = words.trim();
       words += " " + getRubleForm(rubles);
 
+      // Добавляем копейки прописью
       const kopeckWord = getKopeckForm(kopecks);
-      const kopecksPadded = String(kopecks).padStart(2, '0');
+      const kopecksWords = numberToWordsKopecks(kopecks);
+      
+      words += " " + kopecksWords + " " + kopeckWord;
 
-      return (words + " " + kopecksPadded + " " + kopeckWord).trim();
+      return words.trim();
+    }
+
+    // Функция для форматирования суммы в требуемом формате
+    function formatAmountForDocument(amountNumeric, amountWords) {
+      if (!amountNumeric || amountNumeric === "[сумма]") {
+        return "[сумма] ([сумма прописью])";
+      }
+
+      // Формируем сумму в требуемом формате: 1332783.40 (один миллион триста тридцать две тысячи семьсот восемьдесят три рубля сорок копеек)
+      return `${amountNumeric} (${amountWords})`;
     }
 
     function updateAmountWords() {
@@ -309,6 +356,18 @@
         return;
       }
 
+      // Проверка номера счёта для формата: ЛСС-5372098916-1
+      const accountInput = document.getElementById("accountNumber");
+      const accountValue = accountInput.value.trim();
+      const accountPattern = /^ЛСС-\d{10}-\d$/;
+      
+      if (accountValue !== '' && !accountPattern.test(accountValue)) {
+        alert('Номер счёта должен быть в формате: ЛСС-5372098916-1');
+        accountInput.classList.add('invalid');
+        accountInput.focus();
+        return;
+      }
+
       const orgName = document.getElementById("orgName").value.trim() || "[Наименование организации]";
       const contractNumber = contractValue || "[номер договора]";
       const amountNumeric = document.getElementById("amountNumeric").value.trim() || "[сумма]";
@@ -324,7 +383,10 @@
         }
       }
 
-      const accountNumber = document.getElementById("accountNumber").value.trim() || "[номер счёта]";
+      // Форматируем сумму для документа
+      const formattedAmount = formatAmountForDocument(amountNumeric, amountWords);
+
+      const accountNumber = accountValue || "[номер счёта]";
       const refundReason = document.getElementById("refundReason").value.trim() || "________________________________________";
       const inn = document.getElementById("inn").value.trim() || "________________________";
       const kpp = document.getElementById("kpp").value.trim();
@@ -365,7 +427,8 @@
       }));
       paragraphs.push(new Paragraph({ children: [new TextRun("")] }));
 
-      const mainText = `${orgName} просит произвести возврат денежных средств по договору ${contractNumber} в размере ${amountNumeric} (${amountWords}), в том числе НДС по ставке в соответствии с действующим законодательством, по счету ${accountNumber}.`;
+      // Используем отформатированную сумму в правильном формате
+      const mainText = `${orgName} просит произвести возврат денежных средств по договору ${contractNumber} в размере ${formattedAmount}, в том числе НДС по ставке в соответствии с действующим законодательством, по счету ${accountNumber}.`;
       paragraphs.push(new Paragraph({
         children: [new TextRun(mainText)],
         alignment: AlignmentType.JUSTIFIED
