@@ -91,18 +91,17 @@
 
     <div class="form-group">
       <label>Сумма цифрами:</label>
-      <input type="text" id="amountNumeric" placeholder="1332783.40" oninput="updateAmountWords()">
-    </div>
+      <input type="text" id="amountNumeric" placeholder="1332783.40" oninput="validateAmount()">
+</div>
 
     <div class="form-group">
       <label>Сумма прописью:</label>
-      <input type="text" id="amountWords" placeholder="один миллион триста тридцать две тысячи семьсот восемьдесят три рубля сорок копеек" readonly>
-    </div>
+      </div>
 
     <div class="form-group">
       <label>Номер счёта:</label>
       <input type="text" id="accountNumber" placeholder="ЛСС-5372098916-1" oninput="validateAccountNumber()">
-      <div class="format-example">Формат:ЛСС-5372098916-1</div>
+      <div class="format-example">Формат: ЛСС-5372098916-1</div>
     </div>
 
     <div class="form-group">
@@ -163,6 +162,30 @@
     function onlyDigits(input) {
       input.value = input.value.replace(/\D/g, '');
       input.classList.remove('invalid');
+    }
+
+    // Валидация суммы - только цифры, точка или запятая
+    function validateAmount() {
+      const input = document.getElementById('amountNumeric');
+      let value = input.value.trim();
+      
+      // Разрешаем только цифры, точку и запятую
+      value = value.replace(/[^\d.,]/g, '');
+      
+      // Заменяем запятую на точку (для удобства обработки)
+      value = value.replace(',', '.');
+      
+      // Удаляем лишние точки/запятые (оставляем только первую)
+      const parts = value.split('.');
+      if (parts.length > 2) {
+        value = parts[0] + '.' + parts.slice(1).join('');
+      }
+      
+      input.value = value;
+      input.classList.remove('invalid');
+      
+      // Обновляем прописную форму
+      updateAmountWords();
     }
 
     // Валидация номера договора для форматов: 2025/04/15-1200593-smb и 2025/04/15-1200593-adv
