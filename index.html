@@ -92,7 +92,7 @@
     <div class="form-group">
       <label>Сумма цифрами:</label>
       <input type="text" id="amountNumeric" placeholder="1332783.40" oninput="validateAmount()">
-</div>
+    </div>
 
     <div class="form-group">
       <label>Сумма прописью:</label>
@@ -282,67 +282,90 @@
       return words;
     }
 
-    function numberToWordsRubles(num) {
+    // Новая функция для раздельного преобразования рублей и копеек
+    function numberToWordsSeparate(num) {
       if (typeof num !== 'number' || isNaN(num) || num < 0 || num >= 1e9) {
-        return "";
+        return { rubles: "", kopecks: "" };
       }
 
       const rubles = Math.floor(num);
       const kopecks = Math.round((num - rubles) * 100);
 
-      if (rubles === 0 && kopecks === 0) {
-        return "ноль рублей ноль копеек";
-      }
-
-      let words = "";
-
-      const millions = Math.floor(rubles / 1000000);
-      const remainderAfterMillions = rubles % 1000000;
-      if (millions > 0) {
-        words += convertHundreds(millions) + " ";
-        if (millions % 100 > 10 && millions % 100 < 20) words += "миллионов ";
-        else if (millions % 10 === 1) words += "миллион ";
-        else if ([2,3,4].includes(millions % 10)) words += "миллиона ";
-        else words += "миллионов ";
-      }
-
-      const thousands = Math.floor(remainderAfterMillions / 1000);
-      const remainder = remainderAfterMillions % 1000;
-      if (thousands > 0) {
-        let thousandWords = convertHundreds(thousands).replace(/один /, "одна ").replace(/два /, "две ");
-        words += thousandWords + getThousandForm(thousands) + " ";
-      }
-
-      if (remainder > 0 || rubles === 0) {
-        if (remainder === 0 && rubles > 0) {
-        } else {
-          words += convertHundreds(remainder);
-        }
-      }
+      let rublesWords = "";
+      let kopecksWords = "";
 
       if (rubles === 0) {
-        words = "ноль ";
+        rublesWords = "ноль рублей";
+      } else {
+        const millions = Math.floor(rubles / 1000000);
+        const remainderAfterMillions = rubles % 1000000;
+        
+        if (millions > 0) {
+          rublesWords += convertHundreds(millions) + " ";
+          if (millions % 100 > 10 && millions % 100 < 20) rublesWords += "миллионов ";
+          else if (millions % 10 === 1) rublesWords += "миллион ";
+          else if ([2,3,4].includes(millions % 10)) rublesWords += "миллиона ";
+          else rublesWords += "миллионов ";
+        }
+
+        const thousands = Math.floor(remainderAfterMillions / 1000);
+        const remainder = remainderAfterMillions % 1000;
+        
+        if (thousands > 0) {
+          let thousandWords = convertHundreds(thousands).replace(/один /, "одна ").replace(/два /, "две ");
+          rublesWords += thousandWords + getThousandForm(thousands) + " ";
+        }
+
+        if (remainder > 0) {
+          rublesWords += convertHundreds(remainder);
+        }
+
+        rublesWords = rublesWords.trim();
+        rublesWords += " " + getRubleForm(rubles);
       }
-      words = words.trim();
-      words += " " + getRubleForm(rubles);
 
-      // Добавляем копейки прописью
-      const kopeckWord = getKopeckForm(kopecks);
-      const kopecksWords = numberToWordsKopecks(kopecks);
-      
-      words += " " + kopecksWords + " " + kopeckWord;
+      // Копейки
+      if (kopecks === 0) {
+        kopecksWords = "00 копеек";
+      } else {
+        kopecksWords = (kopecks < 10 ? "0" + kopecks : kopecks) + " " + getKopeckForm(kopecks);
+      }
 
-      return words.trim();
+      return {
+        rubles: rublesWords.trim(),
+        kopecks: kopecksWords.trim(),
+        kopecksNumber: kopecks
+      };
+    }
+
+    function numberToWordsRubles(num) {
+      const separate = numberToWordsSeparate(num);
+      return separate.rubles + " " + separate.kopecks;
     }
 
     // Функция для форматирования суммы в требуемом формате
     function formatAmountForDocument(amountNumeric, amountWords) {
       if (!amountNumeric || amountNumeric === "[сумма]") {
-        return "[сумма] ([сумма прописью])";
+        return "[сумма без копеек] ([расшифровка суммы прописью без копеек]) [сумма копеек, только число] копеек";
       }
 
-      // Формируем сумму в требуемом формате: 1332783.40 (один миллион триста тридцать две тысячи семьсот восемьдесят три рубля сорок копеек)
-      return `${amountNumeric} (${amountWords})`;
+      const clean = amountNumeric.replace(/[^0-9.,]/g, '').replace(',', '.');
+      const num = parseFloat(clean);
+
+      if (isNaN(num) || num < 0 || num >= 1e9) {
+        return "[сумма без копеек] ([расшифровка суммы прописью без копеек]) [сумма копеек, только число] копеек";
+      }
+
+      const separate = numberToWordsSeparate(num);
+      
+      // Получаем сумму без копеек
+      const rublesOnly = Math.floor(num);
+      
+      // Форматируем копейки с ведущим нулем если нужно
+      const formattedKopecks = separate.kopecksNumber < 10 ? "0" + separate.kopecksNumber : separate.kopecksNumber;
+
+      // Формируем сумму в требуемом формате: [сумма без копеек] ([расшифровка суммы прописью без копеек]) [сумма копеек, только число] копеек
+      return `${rublesOnly} (${separate.rubles}) ${formattedKopecks} копеек`;
     }
 
     function updateAmountWords() {
@@ -407,7 +430,7 @@
         }
       }
 
-      // Форматируем сумму для документа
+      // Форматируем сумму для документа в новом формате
       const formattedAmount = formatAmountForDocument(amountNumeric, amountWords);
 
       const accountNumber = accountValue || "[номер счёта]";
@@ -451,7 +474,7 @@
       }));
       paragraphs.push(new Paragraph({ children: [new TextRun("")] }));
 
-      // Используем отформатированную сумму в правильном формате
+      // Используем отформатированную сумму в новом формате
       const mainText = `${orgName} просит произвести возврат денежных средств по договору ${contractNumber} в размере ${formattedAmount}, в том числе НДС по ставке в соответствии с действующим законодательством, по счету ${accountNumber}.`;
       paragraphs.push(new Paragraph({
         children: [new TextRun(mainText)],
@@ -466,7 +489,7 @@
       paragraphs.push(new Paragraph({ children: [new TextRun("")] }));
 
       paragraphs.push(new Paragraph({
-        children: [new TextRun(`Реквизиты «${orgName}»`)],
+        children: [new TextRun(`Реквизиты ${orgName}`)],
         alignment: AlignmentType.JUSTIFIED
       }));
       paragraphs.push(new Paragraph({
@@ -497,29 +520,28 @@
         children: [new TextRun(`БИК ${bik}`)],
         alignment: AlignmentType.JUSTIFIED
       }));
+      
+      // Добавляем 2 пустых строки перед должностью
+      paragraphs.push(new Paragraph({ children: [new TextRun("")] }));
       paragraphs.push(new Paragraph({ children: [new TextRun("")] }));
 
       // Должность слева
       paragraphs.push(new Paragraph({
-        children: [new TextRun(`${directorTitle}`)],
+        children: [new TextRun(directorTitle)],
         alignment: AlignmentType.LEFT
       }));
 
-      paragraphs.push(new Paragraph({ children: [new TextRun("")] }));
-
-      // Подпись и печать справа
+      // Подпись и ФИО - всё в одной строке справа
+      const signatureText = `_____________ / ${directorName}`;
       paragraphs.push(new Paragraph({
-        children: [new TextRun("                                                                                                                             ______________ /______________ ")],
-        alignment: AlignmentType.LEFT
+        children: [new TextRun(signatureText)],
+        alignment: AlignmentType.RIGHT
       }));
 
+      // Печать с отступом 2 см от правого края
+      const mpText = " ".repeat(80) + "М.П."; // Уменьшил количество пробелов для отступа 2 см
       paragraphs.push(new Paragraph({
-        children: [new TextRun("")],
-        alignment: AlignmentType.LEFT
-      }));
-
-      paragraphs.push(new Paragraph({
-        children: [new TextRun("                                                                                                                             М.П.")],
+        children: [new TextRun(mpText)],
         alignment: AlignmentType.LEFT
       }));
 
